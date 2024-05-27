@@ -1,7 +1,7 @@
 ## Tailwind watcher
 
 ```bash
-cd ui/static
+cd static
 npx tailwindcss -i ./css/input.css -o ./dist/output.css --watch
 ```
 
