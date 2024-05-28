@@ -10,4 +10,5 @@ Project Description
 ### Completed Column ✓
 
 - [ ] Create example request
+- CEL DO ZROBIENIA LOGOWANIE ORAZ POŁĄCZENIE Z BAZĄ
 
