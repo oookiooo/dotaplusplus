@@ -1,0 +1,43 @@
+<form hx-post="/register" hx-swap="outerHTML">
+  <label class="form-control w-full max-w-xs">
+    <div class="label">
+      <span class="label-text">E-mail</span>
+    </div>
+    <input
+      type="email"
+      name="email"
+      placeholder="name@gmail.com"
+      value="{{form_data.email.value}}"
+      class="input input-bordered w-full max-w-xs {% if form_data.email.error %}input-error{% endif %}"
+    />
+    <div class="label">
+      {% if form_data.email.error %}
+      <span class="label-text-alt text-error">{{form_data.email.error}}</span>
+      {% endif %}
+    </div>
+  </label>
+
+  <label class="form-control w-full max-w-xs">
+    <div class="label">
+      <span class="label-text">Password</span>
+    </div>
+    <input
+      type="password"
+      name="password"
+      placeholder="********"
+      value="{{form_data.password.value}}"
+      class="input input-bordered w-full max-w-xs {% if form_data.password.error %}input-error{% endif %}"
+    />
+    <div class="label">
+      {% if form_data.password.error %}
+      <span class="label-text-alt text-error"
+        >{{form_data.password.error}}</span
+      >
+      {% endif %}
+    </div>
+  </label>
+
+  <button type="submit" hx-disabled-elt="this" class="btn max-w-xs w-full">
+    Sign up
+  </button>
+</form>

@@ -1,9 +1,13 @@
 # Project Name
+
 Project Description
 
 ### Column Name
-- [ ] Task title ~3d #type @name yyyy-mm-dd  
-  - [ ] Sub-task or description  
+
+- [ ] Task title ~3d #type @name yyyy-mm-dd
+  - [ ] Sub-task or description
 
 ### Completed Column ✓
-- [ ] Create example request  
+
+- [ ] Create example request
+
