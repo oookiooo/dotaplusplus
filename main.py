@@ -4,18 +4,6 @@ from fastapi import FastAPI, Request, HTTPException, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import db
-
-db.Base.metadata.create_all(db.engine)
-
-
-def get_session():
-    session = db.SessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()
-
 
 app = FastAPI()
 
