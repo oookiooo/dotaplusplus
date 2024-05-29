@@ -21,6 +21,7 @@ podajemy ścieżkę i ma znaleść plik o nazwie .gitlike
     - status
     - push 
   ![img.png](img.png)
+    - git diff
 
 
 
