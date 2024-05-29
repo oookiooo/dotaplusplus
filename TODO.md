@@ -11,16 +11,13 @@ Project Description
 
 #### gitlike
 
-1. Robimy zwykły program w python który trzeba dodać do 
-zmiennych środowiskowych
-podajemy ścieżkę i ma znaleść plik o nazwie .gitlike
+1. Robimy zwykły program w python który trzeba dodać do
+   zmiennych środowiskowych
+   podajemy ścieżkę i ma znaleść plik o nazwie .gitlike
 2. Komendy
-    - init dodaje folder .gitlike
-    - add dodaje do śledzenia wszystkie/wybrane pliki
-    - log
-    - status
-    - push 
-  ![img.png](img.png)
-
-
-
+   - init dodaje folder .gitlike
+   - add dodaje do śledzenia wszystkie/wybrane pliki
+   - log
+   - status
+   - push
+     ![img.png](img.png)
