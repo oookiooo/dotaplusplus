@@ -13,6 +13,3 @@ class Logger():
 
     def fatal(self, msg: str):
         print("FATAL: ", msg)
-
-
-logger = Logger()

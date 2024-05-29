@@ -95,6 +95,3 @@ class Object():
 
     def path(self, sha: str) -> Path:
         return Path(GITLIKE_OBJECTS, sha[:2], sha[:2])
-
-
-object = Object()

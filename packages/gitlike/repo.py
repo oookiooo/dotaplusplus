@@ -21,18 +21,19 @@ class Repo():
     def init(self, repo_path: str) -> Optional[Exception]:
         try:
             # TODO do smth when exists
-            if os.path.exists(Path(repo_path, GITLIKE_ROOT)):
+            if Path(repo_path, GITLIKE_ROOT).exists():
                 print("Repo already exists")
                 return None
-            os.mkdir(Path(repo_path, GITLIKE_ROOT))
-            os.mkdir(Path(repo_path, GITLIKE_REFS))
-            os.mkdir(Path(repo_path, GITLIKE_REFS_HEADS))
-            os.mkdir(Path(repo_path, GITLIKE_HEAD))
-            os.mkdir(Path(repo_path, GITLIKE_OBJECTS))
-            os.mkdir(Path(repo_path, GITLIKE_INDEX))
-            with open(GITLIKE_HEAD, "w") as f:
-                data = f"ref: refs/heads/{GITLIKE_DEFAULT_MAIN_BRANCH}\n"
-                f.write(data)
+            Path(repo_path, GITLIKE_ROOT).mkdir(parents=True, exist_ok=True)
+            Path(repo_path, GITLIKE_REFS).mkdir(parents=True, exist_ok=True)
+            Path(repo_path, GITLIKE_REFS_HEADS).touch(exist_ok=True)
+            Path(repo_path, GITLIKE_OBJECTS).mkdir(parents=True, exist_ok=True)
+            Path(repo_path, GITLIKE_INDEX).touch(exist_ok=True)
+            Path(repo_path, GITLIKE_HEAD).write_text(
+                data=f"ref: refs/heads/{GITLIKE_DEFAULT_MAIN_BRANCH}\n"
+            )
+            print("Repo created")
             return None
         except IOError as e:
+            print(e)
             return e
