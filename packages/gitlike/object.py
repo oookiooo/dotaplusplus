@@ -75,8 +75,11 @@ class Object():
     ) -> Tuple[str, Optional[Exception]]:
         now = time.localtime()
         timestamp = f"{int(time.mktime(now))} {time.strftime('%z', now)}"
-        # TODO add user_name from config as `author`
-        user_name = "[_not_provided_in_config]"
+        user_name, err = Config.get_value(root_path, ConfigKey.user_name)
+        if err:
+            return "", err
+        if user_name is None:
+            user_name = "[user_name_not_provided_in_config]"
         data = (
             f"tree {tree_sha}\n"
             f"parent {parent_sha}\n"

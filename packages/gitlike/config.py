@@ -1,6 +1,6 @@
 from pathlib import Path
 from enum import Enum
-from typing import Dict, Optional
+from typing import Dict, Tuple
 
 import consts
 
@@ -19,7 +19,7 @@ class Config():
         print("CONFIG: ", Path(root_path, consts.GITLIKE_CONFIG), "\n", config)
 
     @staticmethod
-    def write(root_path: Path, config: Dict) -> Optional[Exception]:
+    def write(root_path: Path, config: Dict) -> Exception | None:
         try:
             data = ""
             for key, value in config.items():
@@ -31,30 +31,37 @@ class Config():
 
     # TODO better parsing
     @staticmethod
-    def parse(root_path: Path) -> Dict:
-        text = Path(root_path, consts.GITLIKE_CONFIG).read_text()
+    def parse(root_path: Path) -> Tuple[Dict, Exception | None]:
         config = {}
-        lines = text.splitlines()
-        for line in lines:
-            key, value = line.split("=")
-            config[key] = value
-        return config
+        try:
+            text = Path(root_path, consts.GITLIKE_CONFIG).read_text()
+            lines = text.splitlines()
+            for line in lines:
+                key, value = line.split("=")
+                config[key] = value
+            return config, None
+        except IOError as e:
+            return config, e
 
     @staticmethod
     def set_value(
             root_path: Path,
             key: ConfigKey,
             value: str
-    ):
-        config = Config.parse(root_path)
+    ) -> Exception | None:
+        config, err = Config.parse(root_path)
+        if err:
+            return err
         config[key] = value
-        Config.write(root_path, config)
+        return Config.write(root_path, config)
 
     @staticmethod
     def get_value(
         root_path: Path,
         key: ConfigKey
-    ) -> str:
-        config = Config.parse(root_path)
-        value = config[key]
-        return value
+    ) -> Tuple[str | None, Exception | None]:
+        config, err = Config.parse(root_path)
+        if err:
+            return "", err
+        value = config.get(key)
+        return value, None
