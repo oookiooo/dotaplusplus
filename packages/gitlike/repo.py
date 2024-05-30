@@ -1,7 +1,7 @@
 from typing import Optional, List
 from pathlib import Path
 
-GITLIKE_ROOT = ".gl"
+GITLIKE_ROOT = Path(".gl")
 GITLIKE_REFS = Path(GITLIKE_ROOT, "refs")
 GITLIKE_REFS_HEADS = Path(GITLIKE_REFS, "heads")
 GITLIKE_HEAD = Path(GITLIKE_ROOT, "HEAD")
@@ -91,7 +91,7 @@ class Repo():
             print(e)
             return e
 
-    @ staticmethod
+    @staticmethod
     def rmrf(dir: Path) -> Optional[Exception]:
         try:
             dir = Path(dir)
@@ -105,7 +105,7 @@ class Repo():
         except IOError as e:
             return e
 
-    @ staticmethod
+    @staticmethod
     def print_dir(dir_path: Path, prefix: str = "") -> Optional[Exception]:
         try:
             if dir_path.is_dir():

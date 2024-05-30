@@ -63,9 +63,7 @@ class Object():
     ) -> Tuple[Optional[str], Optional[Exception]]:
         now = time.localtime()
         timestamp = f"{int(time.mktime(now))} {time.strftime('%z', now)}"
-        user_name, err = Config.get_value(root_path, ConfigKey.user_name)
-        if err:
-            return None, err
+        user_name = Config.get_value(root_path, ConfigKey.user_name)
         if not user_name:
             # TODO do smth when user_name is not in config
             user_name = "[_not_provided_in_config]"
