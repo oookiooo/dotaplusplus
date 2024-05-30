@@ -17,7 +17,8 @@ class Repo():
         return
 
     # TODO better printing, error handling
-    def print(self, root_path) -> Optional[Exception]:
+    @staticmethod
+    def print(root_path) -> Optional[Exception]:
         try:
             dir = Path(root_path, GITLIKE_ROOT)
             return Repo.print_dir(dir)
@@ -25,7 +26,8 @@ class Repo():
             return e
 
     # TODO better checking, prop returning tuple [smth,except]
-    def validate(self, repo_path: str) -> bool:
+    @staticmethod
+    def validate(repo_path: Path) -> bool:
         if not Path(repo_path, GITLIKE_ROOT).exists():
             return False
         if not Path(repo_path, GITLIKE_ROOT).is_dir():
@@ -50,7 +52,8 @@ class Repo():
             return False
         return True
 
-    def delete(self, repo_path) -> Optional[Exception]:
+    @staticmethod
+    def delete(repo_path: Path) -> Optional[Exception]:
         try:
             if not Path(repo_path, GITLIKE_ROOT).exists():
                 return None
@@ -59,7 +62,8 @@ class Repo():
             return e
 
     # TODO split, prop returning tuple [smth,except]
-    def init(self, repo_path: str) -> Optional[Exception]:
+    @staticmethod
+    def init(repo_path: Path) -> Optional[Exception]:
         try:
             # TODO do smth when exists
             if Path(repo_path, GITLIKE_ROOT).exists():

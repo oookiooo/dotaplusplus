@@ -7,9 +7,9 @@ from repo import Repo
 
 
 # this is only for now
-root_path = "test_repo"
+root_path = Path("test_repo")
 repo = Repo()
-object = Object(root_path)
+object = Object()
 
 repo.delete(root_path)
 repo.init(root_path)
@@ -18,9 +18,9 @@ Path(root_path, "main.py").touch()
 is_repo_valid = repo.validate(root_path)
 if is_repo_valid:
     print("Repo is valid")
-    sha, err = object.write_tree(Path(root_path, "src"))
+    sha, err = object.write_tree(root_path, Path("src"))
     print(sha, err)
-    sha, err = object.write_blob(Path(root_path, "main.py"))
+    sha, err = object.write_blob(root_path, Path("main.py"))
     print(sha, err)
 
     repo.print(root_path)
