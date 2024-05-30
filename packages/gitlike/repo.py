@@ -1,16 +1,9 @@
 from typing import Optional, List
 from pathlib import Path
 
-GITLIKE_ROOT = Path(".gl")
-GITLIKE_REFS = Path(GITLIKE_ROOT, "refs")
-GITLIKE_REFS_HEADS = Path(GITLIKE_REFS, "heads")
-GITLIKE_HEAD = Path(GITLIKE_ROOT, "HEAD")
-GITLIKE_OBJECTS = Path(GITLIKE_ROOT, "objects")
-GITLIKE_INDEX = Path(GITLIKE_ROOT, "cos_sie_psuje_z_git_index")
-GITLIKE_CONFIG = Path(GITLIKE_ROOT, "config")
-
-GITLIKE_DEFAULT_MAIN_BRANCH = "master"
-
+from object import Object
+from logger import Logger
+import consts
 
 # TODO rename `Repo`, it is a bad name for `.gl` dirs and files
 
@@ -19,11 +12,57 @@ class Repo():
     def __init__(self):
         return
 
-    # TODO better printing, error handling
     @staticmethod
-    def print(root_path) -> Optional[Exception]:
+    def add(root_path: Path, entries: List[Path]) -> Optional[Exception]:
+        for entry in entries:
+            entry_path = Path(root_path, entry)
+            if entry_path.is_dir():
+                _, err = Object.write_tree(root_path, entry)
+            else:
+                _, err = Object.write_blob(root_path, entry)
+            if err:
+                return err
+        return None
+
+    @staticmethod
+    def commit(root_path: Path, message: str) -> Optional[Exception]:
         try:
-            dir = Path(root_path, GITLIKE_ROOT)
+            head = Path(root_path, consts.GITLIKE_HEAD)
+            head_ref = head.read_text().strip().split(": ")[1]
+            head_file = Path(root_path, head_ref)
+            if head_file.exists():
+                parent_sha = head_file.read_text().strip()
+            else:
+                parent_sha = ""
+            tree_sha, err = Object.write_tree(root_path, Path(""))
+            if err:
+                return err
+            commit_sha, err = Object.write_commit(
+                root_path,
+                tree_sha,
+                parent_sha,
+                message
+            )
+            if err:
+                return err
+            head_file.parent.mkdir(parents=True, exist_ok=True)
+            head_file.write_text(commit_sha)
+            master_ref_file = Path(
+                root_path,
+                consts.GITLIKE_REFS_HEADS,
+                consts.GITLIKE_DEFAULT_MAIN_BRANCH
+            )
+            master_ref_file.write_text(commit_sha)
+            return None
+        except IOError as e:
+            return e
+
+    # TODO better printing, error handling
+
+    @staticmethod
+    def print(root_path: Path) -> Optional[Exception]:
+        try:
+            dir = Path(root_path, consts.GITLIKE_ROOT)
             return Repo.print_dir(dir)
         except IOError as e:
             return e
@@ -32,15 +71,18 @@ class Repo():
     @staticmethod
     def validate(repo_path: Path) -> Optional[List[str]]:
         errors = []
-        root = Path(repo_path, GITLIKE_ROOT)
-        refs = Path(repo_path, GITLIKE_REFS)
-        refs_heads = Path(repo_path, GITLIKE_REFS_HEADS)
+        root = Path(repo_path, consts.GITLIKE_ROOT)
+        refs = Path(repo_path, consts.GITLIKE_REFS)
+        refs_heads = Path(repo_path, consts.GITLIKE_REFS_HEADS)
         refs_heads_main_branch = Path(
-            repo_path, GITLIKE_REFS_HEADS, GITLIKE_DEFAULT_MAIN_BRANCH)
-        objects = Path(repo_path, GITLIKE_OBJECTS)
-        index = Path(repo_path, GITLIKE_INDEX)
-        head = Path(repo_path, GITLIKE_HEAD)
-        config = Path(repo_path, GITLIKE_CONFIG)
+            repo_path,
+            consts.GITLIKE_REFS_HEADS,
+            consts.GITLIKE_DEFAULT_MAIN_BRANCH
+        )
+        objects = Path(repo_path, consts.GITLIKE_OBJECTS)
+        index = Path(repo_path, consts.GITLIKE_INDEX)
+        head = Path(repo_path, consts.GITLIKE_HEAD)
+        config = Path(repo_path, consts.GITLIKE_CONFIG)
         check_path(errors, root, should_be_dir=True)
         check_path(errors, refs, should_be_dir=True)
         check_path(errors, refs_heads, should_be_dir=True)
@@ -56,7 +98,7 @@ class Repo():
     @staticmethod
     def delete(repo_path: Path) -> Optional[Exception]:
         try:
-            if not Path(repo_path, GITLIKE_ROOT).exists():
+            if not Path(repo_path, consts.GITLIKE_ROOT).exists():
                 return None
             return Repo.rmrf(repo_path)
         except IOError as e:
@@ -67,24 +109,26 @@ class Repo():
     def init(repo_path: Path) -> Optional[Exception]:
         try:
             # TODO do smth when exists
-            if Path(repo_path, GITLIKE_ROOT).exists():
+            if Path(repo_path, consts.GITLIKE_ROOT).exists():
                 print("Repo already exists")
                 return None
-            Path(repo_path, GITLIKE_ROOT).mkdir(parents=True, exist_ok=True)
-            Path(repo_path, GITLIKE_REFS).mkdir(parents=True, exist_ok=True)
-            Path(repo_path, GITLIKE_REFS_HEADS).mkdir(
+            Path(repo_path, consts.GITLIKE_ROOT).mkdir(
+                parents=True, exist_ok=True)
+            Path(repo_path, consts.GITLIKE_REFS).mkdir(
+                parents=True, exist_ok=True)
+            Path(repo_path, consts.GITLIKE_REFS_HEADS).mkdir(
                 parents=True, exist_ok=True)
             Path(
                 repo_path,
-                GITLIKE_REFS_HEADS, GITLIKE_DEFAULT_MAIN_BRANCH
+                consts.GITLIKE_REFS_HEADS, consts.GITLIKE_DEFAULT_MAIN_BRANCH
             ).touch(exist_ok=True)
-            Path(repo_path, GITLIKE_OBJECTS).mkdir(parents=True, exist_ok=True)
-            Path(repo_path, GITLIKE_INDEX).touch(exist_ok=True)
-            Path(repo_path, GITLIKE_HEAD).touch(exist_ok=True)
-            Path(repo_path, GITLIKE_HEAD).write_text(
-                data=f"ref: refs/heads/{GITLIKE_DEFAULT_MAIN_BRANCH}\n",
+            Path(repo_path, consts.GITLIKE_OBJECTS).mkdir(
+                parents=True, exist_ok=True)
+            Path(repo_path, consts.GITLIKE_INDEX).touch(exist_ok=True)
+            Path(repo_path, consts.GITLIKE_HEAD).write_text(
+                f"ref: refs/heads/{consts.GITLIKE_DEFAULT_MAIN_BRANCH}\n"
             )
-            Path(repo_path, GITLIKE_CONFIG).touch(exist_ok=True)
+            Path(repo_path, consts.GITLIKE_CONFIG).touch(exist_ok=True)
             print("Repo created")
             return None
         except IOError as e:
@@ -125,8 +169,6 @@ def check_path(
         path: Path,
         should_be_dir=False,
         should_be_file=False
-
-
 ):
     NOT_DIR = "NOT DIR"
     NOT_FILE = "NOT FILE"

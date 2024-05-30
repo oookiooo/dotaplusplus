@@ -26,5 +26,11 @@ if not repo_errors:
     print(sha, err)
 
     repo.print(root_path)
+    err = Repo.add(root_path, [Path("src"), Path("main.py")])
+    if err:
+        print(err)
+    err = Repo.commit(root_path, "feat: cos")
+    if err:
+        print(err)
 else:
     print(repo_errors)
