@@ -1,13 +1,7 @@
-## Tailwind watcher
-
 ```bash
-cd static
-npm i
-npx tailwindcss -i ./css/input.css -o ./dist/output.css --watch
+python ./packages/gitlike/__init__.py
 ```
 
-## Run fastpi
-
 ```bash
-fastapi dev main.py
+python3 ./packages/gitlike/__init__.py
 ```

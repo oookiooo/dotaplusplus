@@ -1,23 +1,19 @@
-# Project Name
+# gitlike
 
-Project Description
+## Type of objects:
 
-### Column Name
+1. Commit - info about commit data, using config and so on
+2. Blob - file data
+3. Tree - dir data
 
-- [ ] Task title ~3d #type @name yyyy-mm-dd
-  - [ ] Sub-task or description
+- [ ] Create `Object` class and test it - it's for encoding, decoding, reading and writing
+- [ ] Create `Config` class and test it
+- [ ] Create `Repo` class and test it - initializes, validates and deletes .gl
+- [ ] Create `Logger` class
 
-### Do zrobienia GITlike
+# Cli
 
-#### gitlike
-
-1. Robimy zwykły program w python który trzeba dodać do
-   zmiennych środowiskowych
-   podajemy ścieżkę i ma znaleść plik o nazwie .gitlike
-2. Komendy
-   - init dodaje folder .gitlike
-   - add dodaje do śledzenia wszystkie/wybrane pliki
-   - log
-   - status
-   - push
-     ![img.png](img.png)
+- [ ] init - initialize an empty .gl
+- [ ] add - eg. `gl add file1 file2 dir1 dir2`
+- [ ] commit - eg. `gl commit -m "some message"`
+- [ ] print - prints .gl

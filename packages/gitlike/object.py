@@ -11,13 +11,16 @@ OBJ_KIND_BLOB = "blob"      # file
 OBJ_KIND_TREE = "tree"      # directory
 
 
+# TODO tests
 class Object():
-    def __init__(self):
+    def __init__(self, root_path):
+        # TODO do not assign `.gl` path to `Object` class
+        self.root_path = root_path
         return
 
     def write_blob(
             self,
-            file_path: str
+            file_path: Path
     ) -> Tuple[Optional[str], Optional[Exception]]:
         try:
             with open(file_path, "rb") as f:
@@ -28,7 +31,7 @@ class Object():
 
     def write_tree(
         self,
-        dir_path: str
+        dir_path: Path
     ) -> Tuple[Optional[str], Optional[Exception]]:
         entries = []
         try:
@@ -37,10 +40,10 @@ class Object():
                     continue
                 if entry.is_dir():
                     mode = "40000"
-                    sha, err = self.write_tree(entry.path)
+                    sha, err = self.write_tree(Path(entry.path))
                 else:
                     mode = f"{entry.stat().st_mode:o}"
-                    sha, err = self.write_blob(entry.path)
+                    sha, err = self.write_blob(Path(entry.path))
                 if err:
                     return None, err
                 entry_data = f"{mode}{entry.name}\000{sha}"
@@ -81,6 +84,7 @@ class Object():
             with open(path, "wb") as f:
                 compressed = zlib.compress(full.encode())
                 f.write(compressed)
+                print(f.read())
         except IOError as e:
             return None, e
         return sha, None
@@ -89,9 +93,10 @@ class Object():
         try:
             with open(self.path(sha), "rb") as f:
                 decompressed = zlib.decompress(f.read()).decode()
+                print(decompressed)
             return decompressed, None
         except IOError as e:
             return None, e
 
     def path(self, sha: str) -> Path:
-        return Path(GITLIKE_OBJECTS, sha[:2], sha[:2])
+        return Path(self.root_path, GITLIKE_OBJECTS, sha[:2], sha[:2])
