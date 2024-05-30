@@ -2,14 +2,19 @@ class Logger():
     def __init__(self):
         return
 
-    def info(self, msg: str):
+    @staticmethod
+    def info(msg: str):
         print("INFO: ", msg)
 
-    def warning(self, msg: str):
+    @staticmethod
+    def warning(msg: str):
         print("WARNING: ", msg)
 
-    def error(self, msg: str):
+    @staticmethod
+    def error(msg: str):
         print("ERROR: ", msg)
 
-    def fatal(self, msg: str):
+    @staticmethod
+    def fatal(msg: str):
         print("FATAL: ", msg)
+        exit(1)
