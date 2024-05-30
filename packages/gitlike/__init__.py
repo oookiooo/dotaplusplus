@@ -2,6 +2,7 @@ from pathlib import Path
 
 from object import Object
 from repo import Repo
+from config import Config, ConfigKey
 
 # TODO add tests, make the `__init__.py` an exporter
 
@@ -9,20 +10,21 @@ from repo import Repo
 # this is only for now
 root_path = Path("test_repo")
 repo = Repo()
-object = Object()
+Config.set_value(root_path, ConfigKey.user_name, "Ktos")
+Config.print(root_path)
 
 repo.delete(root_path)
 repo.init(root_path)
 Path(root_path, "src").mkdir()
 Path(root_path, "main.py").touch()
-is_repo_valid = repo.validate(root_path)
-if is_repo_valid:
+repo_errors = repo.validate(root_path)
+if not repo_errors:
     print("Repo is valid")
-    sha, err = object.write_tree(root_path, Path("src"))
+    sha, err = Object.write_tree(root_path, Path("src"))
     print(sha, err)
-    sha, err = object.write_blob(root_path, Path("main.py"))
+    sha, err = Object.write_blob(root_path, Path("main.py"))
     print(sha, err)
 
     repo.print(root_path)
 else:
-    print("Repo is invalid")
+    print(repo_errors)

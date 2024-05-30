@@ -1,12 +1,12 @@
 from pathlib import Path
 from enum import Enum
-from typing import Dict, Tuple, Optional
+from typing import Dict, Optional
 
-from repo import GITLIKE_ROOT
+from repo import GITLIKE_CONFIG
 
-GITLIKE_CONFIG = Path(GITLIKE_ROOT, "config")
 
-ConfigKey = Enum("ConfigKey", ["user_name"])
+class ConfigKey(str, Enum):
+    user_name = "user_name"
 
 
 class Config():
@@ -14,9 +14,16 @@ class Config():
         return
 
     @staticmethod
+    def print(root_path: Path):
+        config = Config.parse(root_path)
+        print("CONFIG: ", Path(root_path, GITLIKE_CONFIG), "\n", config)
+
+    @staticmethod
     def write(root_path: Path, config: Dict) -> Optional[Exception]:
         try:
-            data = "\n".join(config)
+            data = ""
+            for key, value in config.items():
+                data += key + "=" + value + "\n"
             Path(root_path, GITLIKE_CONFIG).write_text(data)
             return None
         except IOError as e:
@@ -24,51 +31,30 @@ class Config():
 
     # TODO better parsing
     @staticmethod
-    def parsed(root_path: Path) -> Tuple[Optional[Dict], Optional[Exception]]:
-        text, err = Config.raw(root_path)
-        if err:
-            return None, err
-        if not text:
-            return None, None
+    def parse(root_path: Path) -> Dict:
+        text = Path(root_path, GITLIKE_CONFIG).read_text()
         config = {}
         lines = text.splitlines()
         for line in lines:
             key, value = line.split("=")
             config[key] = value
-        return config, None
+        return config
 
     @staticmethod
-    def raw(root_path: Path) -> Tuple[
-            Optional[str],
-            Optional[Exception],
-    ]:
-        try:
-            path = Path(root_path, GITLIKE_CONFIG)
-            if not path.exists():
-                return None, None
-            data = path.read_text()
-            return data, None
-        except IOError as e:
-            return None, e
-
-    @staticmethod
-    def set_value(root_path: Path, key: ConfigKey, value: str) -> bool:
-        config, err = Config.parsed(root_path)
-        if not config or err:
-            return False
+    def set_value(
+            root_path: Path,
+            key: ConfigKey,
+            value: str
+    ):
+        config = Config.parse(root_path)
         config[key] = value
         Config.write(root_path, config)
-        return True
 
     @staticmethod
     def get_value(
-            root_path: Path,
-            key: ConfigKey
-    ) -> Tuple[Optional[str], Optional[Exception]]:
-        config, err = Config.parsed(root_path)
-        if err:
-            return None, err
-        if not config:
-            return None, None
+        root_path: Path,
+        key: ConfigKey
+    ) -> str:
+        config = Config.parse(root_path)
         value = config[key]
-        return value, None
+        return value
