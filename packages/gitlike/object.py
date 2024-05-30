@@ -1,3 +1,4 @@
+from enum import Enum
 import hashlib
 import os
 import time
@@ -8,9 +9,11 @@ from pathlib import Path
 from repo import GITLIKE_OBJECTS, GITLIKE_ROOT
 from config import Config, ConfigKey
 
-OBJ_KIND_COMMIT = "commit"  # commit
-OBJ_KIND_BLOB = "blob"      # file
-OBJ_KIND_TREE = "tree"      # directory
+
+class ObjectKind(str, Enum):
+    commit = "commit"  # commit
+    blob = "blob"      # file
+    tree = "tree"      # directory
 
 
 # TODO tests
@@ -26,7 +29,7 @@ class Object():
         try:
             with open(Path(root_path, file_path), "rb") as f:
                 data = f.read()
-            return Object.write(root_path, OBJ_KIND_BLOB, data.decode())
+            return Object.write(root_path, ObjectKind.blob, data.decode())
         except IOError as e:
             return None, e
 
@@ -50,7 +53,7 @@ class Object():
                     return None, err
                 entry_data = f"{mode}{entry.name}\000{sha}"
                 entries.append(entry_data)
-            return Object.write(root_path, OBJ_KIND_TREE, "".join(entries))
+            return Object.write(root_path, ObjectKind.tree, "".join(entries))
         except IOError as e:
             return None, e
 
@@ -73,7 +76,7 @@ class Object():
             f"author {user_name} {timestamp}\n"
             f"message {message}\n"
         )
-        return Object.write(root_path, OBJ_KIND_COMMIT, data)
+        return Object.write(root_path, ObjectKind.commit, data)
 
     @staticmethod
     def write(
